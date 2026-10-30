@@ -4,7 +4,7 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import { clienteService } from "../services/cliente.service.js";
+import { clienteService } from "../services/client.service.js";
 import { CriarCliente } from "../types/cliente.js";
 
 export const clienteRouter = Router();
@@ -23,7 +23,7 @@ clienteRouter.get("/", async (_request: Request, response: Response) => {
 
 clienteRouter.post(
   "/",
-  async (request: Request<{}, {}, CriarCliente>, response: Response) => {
+  async (request: Request<{}, CriarCliente>, response: Response) => {
     try {
       const dados = request.body;
       const cliente = await clienteService.create(dados);
@@ -90,7 +90,7 @@ clienteRouter.delete(
   async (request: Request<{ id: string }>, response: Response) => {
     const { id } = request.params;
     try {
-      const res = await clienteService.delete(id);
+      const res = await clienteService.deletarCliente(id);
       return response.json(res);
     } catch (error) {
       console.error(error);

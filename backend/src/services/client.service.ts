@@ -1,20 +1,20 @@
 import { pool } from "../database/connection.js";
 import { Cliente, CriarCliente } from "../types/cliente.js";
 
-class CamaService {
+class ClienteService {
   async getAll(): Promise<Cliente[]> {
     const res = await pool.query<Cliente>("SELECT * FROM cliente");
     return res.rows;
   }
 
   async getById(id: string): Promise<Cliente[] | null> {
-    const res = await pool.query<Cliente>("SELECT * FROM clientes WHERE id = \$1", [
+    const res = await pool.query<Cliente>("SELECT * FROM cliente WHERE id = \$1", [
       id,
     ]);
 
-    const cama = res.rows[0];
+    const cliente = res.rows[0];
 
-    if (!cama) {
+    if (!cliente) {
       return null;
     }
 
@@ -23,15 +23,16 @@ class CamaService {
 
   async create(dados: CriarCliente): Promise<Cliente> {
     const res = await pool.query<Cliente>(
-      `INSERT INTO cliente
-            (nome, tamanho, quantidade) VALUES ($1, $2, $3) RETURNING *`,
-      [],
+      `INSERT INTO cliente (nome, telefone, dt_nascimento, email) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [
+        dados.nome, dados.telefone, dados.dt_nascimento, dados.email
+      ],
     );
 
     const cliente = res.rows[0];
 
-    if (!cama) {
-      throw new Error("O banco não retornou a cama cadastrada");
+    if (!cliente) {
+      throw new Error("O banco não retornou o cliente cadastrado");
     }
 
     return cliente;
@@ -40,13 +41,13 @@ class CamaService {
   async update(id: string, dados: CriarCliente): Promise<Cliente | null> {
     const res = await pool.query<Cliente>(
       `UPDATE cliente 
-       SET nome = $1, = $2, = $3 
-       WHERE id = $4 RETURNING *`,
-      [dados, dados, dados, id],
+       SET nome = $1, telefone = $2, dt_nascimento = $3, email = $4 
+       WHERE id = $5 RETURNING *`,
+      [dados.nome, dados.telefone, dados.dt_nascimento, dados.email, id],
     );
 
-    const cama = res.rows[0];
-    return cama || null;
+    const cliente = res.rows[0];
+    return cliente || null;
   }
 
   async deletarCliente(id: string): Promise<boolean> {
@@ -55,4 +56,4 @@ class CamaService {
   }
 }
 
-export const camaService = new CamaService();
+export const clienteService = new ClienteService();
